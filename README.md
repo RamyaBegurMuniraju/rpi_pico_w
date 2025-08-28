@@ -34,7 +34,9 @@ git submodule update --init
 Export PICO SDK Path
 export PICO_SDK_PATH=~/pico-sdk
 
-Build the Project
+Download the source code
+git clone https://github.com/
+cd rpi_pico_w
 mkdir build
 cd build
 cmake .. -DPICO_BOARD=pico_w
