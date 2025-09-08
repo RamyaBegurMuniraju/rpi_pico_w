@@ -12,6 +12,7 @@
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 #include "hardware/irq.h"
+#include "pico/stdio_usb.h"
 
 #include "temp_sensor.h"
 
@@ -21,8 +22,8 @@
 
 #define I2C_SLAVE_ADDR 0x42
 #define I2C_INSTANCE i2c0
-#define I2C_SDA_PIN 4
-#define I2C_SCL_PIN 5
+#define I2C_SDA_PIN 6
+#define I2C_SCL_PIN 7
 
 static uint8_t adv_data[] = {
     // Flags general discoverable
@@ -35,6 +36,7 @@ static const uint8_t adv_data_len = sizeof(adv_data);
 
 int le_notification_enabled;
 hci_con_handle_t con_handle;
+
 uint16_t current_temp;
 static btstack_timer_source_t heartbeat;
 static btstack_packet_callback_registration_t hci_event_callback_registration;
@@ -47,6 +49,9 @@ extern uint8_t const profile_data[];
 static void poll_temp(void);
 
 static void i2c0_irq_handler() {
+    static int count = 0;
+    count++;
+    printf("I2C IRQ count: %d\n", count);
     // Handle write from master
     while (i2c_get_read_available(I2C_INSTANCE)) {
         i2c_rx_data[i2c_rx_index++] = i2c_read_byte_raw(I2C_INSTANCE);
@@ -58,7 +63,7 @@ static void i2c0_irq_handler() {
     if (i2c_get_write_available(I2C_INSTANCE)) {
         // Send LSB of current temperature
         uint8_t temp_lsb = current_temp & 0xFF;
-        i2c_write_byte_raw(I2C_INSTANCE, temp_lsb);
+        i2c_write_byte_raw(I2C_INSTANCE, 0xAB);
     }
 
     // Clear interrupt
@@ -196,7 +201,9 @@ void key_pressed_func(void *param) {
 }
 
 int main() {
+    stdio_usb_init();
     stdio_init_all();
+
 
 restart:
     if (cyw43_arch_init()) {
@@ -213,6 +220,7 @@ restart:
     adc_set_temp_sensor_enabled(true);
 
     i2c_slave_init();
+    irq_set_pending(I2C0_IRQ);
 
     l2cap_init();
     sm_init();
