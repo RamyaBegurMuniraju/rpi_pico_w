@@ -7,8 +7,8 @@ Modular C examples for Bluetooth Low Energy using Raspberry Pi Pico W and BTstac
 
 - `advertising/`: BLE advertising + temperature sensor
 - `connection/`: BLE connection initiation & handling
-- `data_streaming/`: BLE connection initiation & data streaming
-- `throughput/`: BLE connection initiation & handling & throughput measurement
+- `data_streaming/`: BLE connection initiation & data streaming for throughput measurement
+- `i2c_throughput/`: BLE connection initiation & handling & throughput measurement
 
 
 ## Prerequisites
