@@ -1,0 +1,32 @@
+cmake_minimum_required(VERSION 4.1)
+# Standalone example that reads from the on board temperature sensor and sends notifications via BLE
+# Flashes slowly each second to show it's running
+add_executable(i2c_data_ble
+    client.c
+	${PICO_SDK_PATH}/src/rp2_common/pico_i2c_slave/i2c_slave.c
+    )
+target_link_libraries(i2c_data_ble
+    pico_stdio_usb
+    pico_stdlib
+    pico_btstack_ble
+    pico_btstack_cyw43
+    pico_cyw43_arch_none
+    hardware_adc
+    hardware_i2c
+    )
+target_include_directories(i2c_data_ble PRIVATE
+	${PICO_SDK_PATH}/src/rp2_common/pico_i2c_slave/include
+    ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_SOURCE_DIR}/lib # For our common btstack config
+    )
+pico_enable_stdio_usb(i2c_data_ble 1)
+pico_enable_stdio_uart(i2c_data_ble 0)
+
+#target_compile_definitions(picow_bt_example_common INTERFACE
+ #    WANT_HCI_DUMP=1 # This enables btstack debug
+  #   )
+
+# create .uf2 etc  
+pico_add_extra_outputs(i2c_data_ble)
+
+
