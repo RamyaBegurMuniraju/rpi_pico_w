@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 3.28)
 # Standalone example that reads from the on board temperature sensor and sends notifications via BLE
 # Flashes slowly each second to show it's running
 add_executable(picow_ble_data

@@ -26,7 +26,7 @@
 
 #define APP_AD_FLAGS 0x06
 
-const uint16_t TSPX_le_psm = 0x25;
+const uint16_t TSPX_le_psm = 0x0081;
 static uint32_t bytes_received = 0;
 static uint32_t start_time = 0;
 
@@ -161,9 +161,18 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 		case HCI_EVENT_PACKET:
 			switch (hci_event_packet_get_type(packet)) {
 				case BTSTACK_EVENT_STATE:
-					// BTstack activated, get started
 					if (btstack_event_state_get_state(packet) == HCI_STATE_WORKING) {
-						printf("To start streaming, please run the le_credit_based_flow_control_mode_client example on other device.\n");
+						printf(" BTstack activated, get started\n");
+						// setup advertisements
+						uint16_t adv_int_min = 0x0030;
+						uint16_t adv_int_max = 0x0030;
+						uint8_t adv_type = 0;
+						bd_addr_t null_addr;
+						memset(null_addr, 0, 6);
+						gap_advertisements_set_params(adv_int_min, adv_int_max, adv_type, 0, null_addr, 0x07, 0x00);
+						gap_advertisements_set_data(adv_data_len, (uint8_t *) adv_data);
+						gap_advertisements_enable(1);	
+
 					} 
 					break;
 				case HCI_EVENT_DISCONNECTION_COMPLETE:
@@ -207,7 +216,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 				case HCI_EVENT_META_GAP:
 					switch (hci_event_gap_meta_get_subevent_code(packet)) {
 						case GAP_SUBEVENT_LE_CONNECTION_COMPLETE:
-							//printf("************ Received event gap_subevent_le_connection_complete *************\n");
+							printf("************ Received event gap_subevent_le_connection_complete *************\n");
 							bd_addr_t addr;
 							gap_subevent_le_connection_complete_get_peer_address(packet, addr);
 							uint8_t status = gap_subevent_le_connection_complete_get_status(packet);
@@ -261,7 +270,9 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 
 				case L2CAP_EVENT_CBM_INCOMING_CONNECTION: 
 					psm = l2cap_event_cbm_incoming_connection_get_psm(packet);
+					printf("requesting psm = %02x\n", psm);
 					cid = l2cap_event_cbm_incoming_connection_get_local_cid(packet);
+					printf("requesting cid = %02x\n", cid);
 					if (psm != TSPX_le_psm) break;
 					printf("L2CAP: Accepting incoming connection request for 0x%02x, PSM %02x\n", cid, psm);
 					l2cap_cbm_accept_connection(cid, data_channel_buffer, sizeof(data_channel_buffer), initial_credits);
@@ -297,6 +308,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 					break;
 
 			}
+			break;
 		case L2CAP_DATA_PACKET:
 			if (bytes_received == 0) {
 				start_time = btstack_run_loop_get_time_ms();
@@ -385,46 +397,42 @@ int main(void)
     hci_add_event_handler(&hci_event_callback_registration);
 
 
-    l2cap_init();
-    sm_init();
+
+    //sm_init();
 
     // register for SM events
-    sm_event_callback_registration.callback = &sm_packet_handler;
-    sm_add_event_handler(&sm_event_callback_registration);
+   // sm_event_callback_registration.callback = &sm_packet_handler;
+  //  sm_add_event_handler(&sm_event_callback_registration);
 
 	// register for L2CAP events
+    	l2cap_init();
 	l2cap_event_callback_registration.callback = &packet_handler;
 	l2cap_add_event_handler(&l2cap_event_callback_registration);
 
 	// le data channel setup
-	l2cap_cbm_register_service(&packet_handler, TSPX_le_psm, LEVEL_0);
+	//l2cap_cbm_register_service(&packet_handler, TSPX_le_psm, LEVEL_0);
+	printf("Registering LE CBM service with PSM 0x%04x\n", TSPX_le_psm);
+int err = l2cap_cbm_register_service(&packet_handler, TSPX_le_psm, LEVEL_0);
+printf("l2cap_cbm_register_service returned 0x%02x\n", err);
 
-	// setup advertisements
-	uint16_t adv_int_min = 0x0030;
-	uint16_t adv_int_max = 0x0030;
-	uint8_t adv_type = 0;
-	bd_addr_t null_addr;
-	memset(null_addr, 0, 6);
-	gap_advertisements_set_params(adv_int_min, adv_int_max, adv_type, 0, null_addr, 0x07, 0x00);
-	gap_advertisements_set_data(adv_data_len, (uint8_t *) adv_data);
 
-	gap_advertisements_enable(1);	
 
-	// turn on!
 	hci_power_control(HCI_POWER_ON);
+	// turn on!
 
 	next_blink_time = make_timeout_time_ms(1000);  // initial blink timeout
 
 	while (true) {
 		async_context_poll(cyw43_arch_async_context());
 
-		if (absolute_time_diff_us(get_absolute_time(), next_blink_time) < 0) {
+		/*if (absolute_time_diff_us(get_absolute_time(), next_blink_time) < 0) {
 			led_on = !led_on;
 			cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_on);
 			next_blink_time = make_timeout_time_ms(1000);  // every 1 sec
 		}
 
 		async_context_wait_for_work_until(cyw43_arch_async_context(), next_blink_time);
+		*/
 	}
 
 	cyw43_arch_deinit();
