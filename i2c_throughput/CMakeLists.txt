@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 3.28)
 
 add_executable(i2c_data_ble
 	main.c
+	#slave.c
+	#test.c
 	${PICO_SDK_PATH}/src/rp2_common/pico_i2c_slave/i2c_slave.c
     )
 target_link_libraries(i2c_data_ble

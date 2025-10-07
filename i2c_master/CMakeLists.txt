@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.28)
 # Flashes slowly each second to show it's running
 
 add_executable(i2c_data
-	i2c_master.c
-	# new_method.c
+	#i2c_master_ble.c
+	i2c_master_dma.c
     )
 target_link_libraries(i2c_data
     pico_stdio_usb
@@ -12,8 +12,9 @@ target_link_libraries(i2c_data
     pico_btstack_ble
     pico_btstack_cyw43
     pico_cyw43_arch_none
-    hardware_adc
+    #hardware_adc
     hardware_i2c
+    hardware_dma
 	pico_multicore
     )
 target_include_directories(i2c_data PRIVATE

@@ -1,10 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 add_executable(picow_i2c_to_l2cap
-	#slave.c
-	#pico_source_test.c
-	#new_method.c #DMA method 400 kbps only
-	main.c
+	classic.c
 )
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/lib/pico_i2c_slave)
@@ -16,12 +13,13 @@ target_link_libraries(picow_i2c_to_l2cap
     pico_btstack_classic
     pico_btstack_cyw43
     pico_cyw43_arch_none
-    hardware_adc
+    #hardware_adc
     hardware_i2c
+    hardware_dma
+    hardware_irq
     pico_i2c_slave      # from pico-extras
     pico_multicore       # <-- add this line
-    #pico_btstack_flash_bank
-    #pcio_multicore
+    pico_btstack_flash_bank
 )
 
 target_include_directories(picow_i2c_to_l2cap PRIVATE
@@ -41,5 +39,4 @@ target_include_directories(picow_i2c_to_l2cap PRIVATE
 # USB stdio? (optional)
 pico_enable_stdio_usb(picow_i2c_to_l2cap 1)
 pico_enable_stdio_uart(picow_i2c_to_l2cap 0)
-
 pico_add_extra_outputs(picow_i2c_to_l2cap)

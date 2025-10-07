@@ -1,3 +1,4 @@
+
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -13,17 +14,16 @@
 #include "btstack_run_loop_embedded.h"
 
 // ===== I2C config =====
-#define I2C_PORT        i2c0
-#define I2C_SDA_PIN     PICO_DEFAULT_I2C_SDA_PIN
-#define I2C_SCL_PIN     PICO_DEFAULT_I2C_SCL_PIN
+#define I2C_PORT        i2c1
+#define I2C_SDA_PIN     6//PICO_DEFAULT_I2C_SDA_PIN
+#define I2C_SCL_PIN     7//PICO_DEFAULT_I2C_SCL_PIN
 #define I2C_SLAVE_ADDR  0x17
-#define I2C_BAUD_HZ     (3.4 * 1000*1000)	// 1 MHz
 
 // ===== BLE (LE CoC / CBM) =====
 #define CBM_PSM         0x0081
 #define INITIAL_CREDITS L2CAP_LE_AUTOMATIC_CREDITS
 #define MPS_BYTES       65535	// typical LE CoC MPS
-#define TX_MAX          65535	// send per l2cap_send() call (keep = MPS)
+#define TX_MAX          1024	// send per l2cap_send() call (keep = MPS)
 
 // ===== Ring buffer (power of 2 for cheap wrap) =====
 //#define RING_SHIFT      13	// 2^13 = 8192 bytes ring, 8KB
@@ -84,7 +84,7 @@ i2c_slave_isr (i2c_inst_t *i2c, i2c_slave_event_t event)
       while (i2c_get_read_available (i2c))
 	{
 	  uint8_t b = i2c_read_byte_raw (i2c);
-	  // Overwrite oldest if ring would overflow (optional drop policy):
+	  // Overwrite oldest if ring would overflow (optional drop policy)
 	  if (ring_count () >= RING_SIZE - 1)
 	    {
 	      //printf("drop oldest to keep running\n");
@@ -179,7 +179,7 @@ ble_handler (uint8_t packet_type, uint16_t channel, uint8_t *packet,
 	    if (btstack_event_state_get_state (packet) == HCI_STATE_WORKING)
 	      {
 		printf ("// Advertise as LE CoC sink\n");
-#if 0
+#if 1
 		const uint8_t adv[] =
 		  { 0x02, 0x01, 0x06, 0x0E, 0x09, 'I', '2', 'C', ' ', 'B',
 'L', 'E', ' ', 'B', 'r', 'i', 'd', 'g', 'e' };
@@ -372,7 +372,6 @@ setup_i2c_slave (void)
   gpio_pull_up (I2C_SDA_PIN);
   gpio_pull_up (I2C_SCL_PIN);
 
-  //i2c_init (I2C_PORT, I2C_BAUD_HZ);
   i2c_slave_init (I2C_PORT, I2C_SLAVE_ADDR, &i2c_slave_isr);
 }
 
