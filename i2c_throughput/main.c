@@ -14,9 +14,9 @@
 #include "btstack_run_loop_embedded.h"
 
 // ===== I2C config =====
-#define I2C_PORT        i2c1
-#define I2C_SDA_PIN     6//PICO_DEFAULT_I2C_SDA_PIN
-#define I2C_SCL_PIN     7//PICO_DEFAULT_I2C_SCL_PIN
+#define I2C_PORT        i2c0
+#define I2C_SDA_PIN     4//PICO_DEFAULT_I2C_SDA_PIN
+#define I2C_SCL_PIN     5//PICO_DEFAULT_I2C_SCL_PIN
 #define I2C_SLAVE_ADDR  0x17
 
 // ===== BLE (LE CoC / CBM) =====

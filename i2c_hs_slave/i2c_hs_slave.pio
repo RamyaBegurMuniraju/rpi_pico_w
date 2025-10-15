@@ -1,0 +1,49 @@
+.program i2c_hs_slave_rx
+
+% c-sdk {
+#include "hardware/pio.h"
+#include "hardware/gpio.h"
+static inline void i2c_hs_slave_rx_program_init(PIO pio, uint sm, uint offset,
+                                                uint sda_pin, uint scl_pin){
+    pio_sm_config c = i2c_hs_slave_rx_program_get_default_config(offset);
+    // We still read SDA via IN PINS base (bit 0), but timing uses absolute GPIO waits.
+    sm_config_set_in_pins(&c,  sda_pin);           // pin index 0 = SDA
+    sm_config_set_set_pins(&c, sda_pin, 1);        // SET controls SDA dir (ACK)
+    sm_config_set_in_shift(&c, false, true, 8);    // SHIFT-LEFT, autopush @8 (LSByte valid)
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_RX);
+    sm_config_set_clkdiv(&c, 1.0f);
+
+    pio_gpio_init(pio, sda_pin);
+    pio_gpio_init(pio, scl_pin);
+    // Start released: SDA value=0 when driven, DIR=input initially
+    pio_sm_set_pins_with_mask   (pio, sm, 0u, 1u << sda_pin);
+    pio_sm_set_pindirs_with_mask(pio, sm, 0u, 1u << sda_pin);
+
+    pio_sm_init(pio, sm, offset, &c);
+}
+%}
+
+; ---------- ensure SDA released on entry ----------
+boot:         set pindirs, 0
+
+; ---------- START detect (SDA 1->0 while SCL==1), ABSOLUTE GPIO ----------
+; replace 4/5 below if you wire to other pins
+idle:         wait 1 gpio, 4        ; SDA high
+start_wait:   wait 0 gpio, 4        ; SDA fell
+              wait 1 gpio, 5        ; confirm SCL is high (true START)
+
+; ---------- byte loop ----------
+newbyte:      set x, 7              ; 8 bits
+bit_wait_lo:  wait 0 gpio, 5        ; ensure SCL low before next bit
+bit_wait_hi:  wait 1 gpio, 5        ; SCL rising edge -> sample point
+sample:       in pins, 1            ; sample SDA (IN base bit0 = SDA)
+bit_wait_fal: wait 0 gpio, 5        ; wait SCL fall
+              jmp x-- bit_wait_lo   ; next bit or fall through after 8
+
+; ---------- ACK on 9th clock (drive SDA low while SCL high) ----------
+ack_drive:    set pindirs, 1        ; drive SDA low (value already 0)
+ack_hi:       wait 1 gpio, 5        ; hold during SCL high
+ack_fall:     wait 0 gpio, 5        ; until SCL falls
+              set pindirs, 0        ; release SDA
+              jmp newbyte
+

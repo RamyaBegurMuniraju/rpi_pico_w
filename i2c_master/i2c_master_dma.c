@@ -19,7 +19,8 @@ int main(){
     sleep_ms(1000);
     printf("I2C Master: send %u bytes to 0x%02X\n", (unsigned)TOTAL_BYTES, SLAVE_ADDR);
 
-    i2c_init(I2C_PORT, 3.4 * 1000 * 1000); // 1 MHz start; try 3.4 MHz after stable
+    i2c_init(I2C_PORT, 3.4 * 1000 * 1000); // 3.4 MHz 
+    //i2c_init(I2C_PORT,  1000 * 1000); // 1 MHz
     gpio_set_function(SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(SCL_PIN, GPIO_FUNC_I2C);
     gpio_pull_up(SDA_PIN);

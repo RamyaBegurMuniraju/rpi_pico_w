@@ -33,6 +33,7 @@ static volatile uint32_t dma_irq_count = 0; // debug
 #define L2CAP_TX_MTU    4096              // safe Classic default
 //#define L2CAP_TX_MTU    1024              // safe Classic default
 
+//#define TESTING  0
 static uint16_t l2cap_cid = 0;
 static uint16_t remote_mtu = L2CAP_TX_MTU;
 static uint8_t  tx_buf[L2CAP_TX_MTU];
@@ -124,6 +125,12 @@ static void i2c_slave_init_dma(void){
     dma_init_and_start();
 
 }
+static inline void hexdump(const uint8_t *p, uint32_t n){
+    for (uint32_t i = 0; i < n; i++){
+        printf("%02X%s", (unsigned)p[i], ((i+1)%16) ? " " : "\n");
+    }
+    if (n % 16) printf("\n");
+}
 
 // ---------------- L2CAP SEND PUMP ----------------
 static bool l2cap_try_send_once(void){
@@ -148,6 +155,9 @@ static bool l2cap_try_send_once(void){
     memcpy(tx_buf, &ring_buf[rd], first);
     if (tail) memcpy(tx_buf + first, &ring_buf[0], tail);
 
+//#if TESTING 
+ //hexdump(tx_buf, to_send);
+//#endif
     if (l2cap_send(l2cap_cid, tx_buf, to_send) == 0){
         ring_consume(to_send);
 	  // No ACL buffers — request another send slot and return.
@@ -196,6 +206,8 @@ static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packe
             remote_mtu = l2cap_event_channel_opened_get_remote_mtu(packet);
             if (remote_mtu > L2CAP_TX_MTU) remote_mtu = L2CAP_TX_MTU;
             printf("L2CAP open ok: cid=%u, remote_mtu=%u\n", l2cap_cid, remote_mtu);
+	     gap_discoverable_control(0);
+             gap_connectable_control(0);
             l2cap_request_can_send_now_event(l2cap_cid);
         } break;
 

@@ -1,0 +1,49 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/ramya/rpi_pico_w/i2c_hs_slave/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	//
+DATA	main.c	/^  { WAIT_ADDR, DATA } state = WAIT_ADDR;$/;"	e	enum:main::__anon0d38083b0103	file:
+HS_SLAVE_RING_BYTES	i2c_hs_slave.c	/^#define HS_SLAVE_RING_BYTES /;"	d	file:
+SCL_PIN	main.c	/^#define SCL_PIN /;"	d	file:
+SDA_PIN	main.c	/^#define SDA_PIN /;"	d	file:
+TARGET_ADDR	main.c	/^#define TARGET_ADDR /;"	d	file:
+TOTAL_BYTES	main.c	/^#define TOTAL_BYTES /;"	d	file:
+WAIT_ADDR	main.c	/^  { WAIT_ADDR, DATA } state = WAIT_ADDR;$/;"	e	enum:main::__anon0d38083b0103	file:
+__anon0d38083b0103	main.c	/^  { WAIT_ADDR, DATA } state = WAIT_ADDR;$/;"	g	function:main	file:
+__anon81e5b02d0108	i2c_hs_slave.h	/^typedef struct {$/;"	s
+dma_chan	i2c_hs_slave.h	/^    int   dma_chan;$/;"	m	struct:__anon81e5b02d0108	typeref:typename:int
+dma_chan_g	i2c_hs_slave.c	/^static int dma_chan_g = -1;$/;"	v	typeref:typename:int	file:
+dma_irq_handler	i2c_hs_slave.c	/^static void __isr dma_irq_handler(void){$/;"	f	typeref:typename:void __isr	file:
+dump_first_bytes_once	main.c	/^dump_first_bytes_once (void)$/;"	f	typeref:typename:void	file:
+first_bytes	main.c	/^static uint8_t first_bytes[16];$/;"	v	typeref:typename:uint8_t[16]	file:
+first_bytes_cnt	main.c	/^static int first_bytes_cnt = 0;$/;"	v	typeref:typename:int	file:
+first_bytes_dumped	main.c	/^static bool first_bytes_dumped = false;$/;"	v	typeref:typename:bool	file:
+gpio_irq_isr	i2c_hs_slave.c	/^static void gpio_irq_isr(uint gpio, uint32_t events){$/;"	f	typeref:typename:void	file:
+hs_i2c_slave	CMakeLists.txt	/^add_executable(hs_i2c_slave$/;"	t
+i2c_hs_slave_clear_stop	i2c_hs_slave.c	/^void i2c_hs_slave_clear_stop(void){ stop_flag = false; }$/;"	f	typeref:typename:void
+i2c_hs_slave_get_byte	i2c_hs_slave.c	/^int i2c_hs_slave_get_byte(void){$/;"	f	typeref:typename:int
+i2c_hs_slave_init	i2c_hs_slave.c	/^void i2c_hs_slave_init(i2c_hs_slave_t* ctx, PIO pio, uint sm, uint sda_pin, uint scl_pin){$/;"	f	typeref:typename:void
+i2c_hs_slave_ring_free	i2c_hs_slave.c	/^uint32_t i2c_hs_slave_ring_free(void){ return (HS_SLAVE_RING_BYTES - 1) - ring_count(); }$/;"	f	typeref:typename:uint32_t
+i2c_hs_slave_stop_seen	i2c_hs_slave.c	/^bool i2c_hs_slave_stop_seen(void){ return stop_flag; }$/;"	f	typeref:typename:bool
+i2c_hs_slave_t	i2c_hs_slave.h	/^} i2c_hs_slave_t;$/;"	t	typeref:struct:__anon81e5b02d0108
+main	main.c	/^main ()$/;"	f	typeref:typename:int
+pio	i2c_hs_slave.h	/^    PIO   pio;$/;"	m	struct:__anon81e5b02d0108	typeref:typename:PIO
+rd_idx	i2c_hs_slave.c	/^static volatile uint32_t wr_idx = 0, rd_idx = 0;$/;"	v	typeref:typename:volatile uint32_t	file:
+ring_buf	i2c_hs_slave.c	/^static uint8_t ring_buf[HS_SLAVE_RING_BYTES];$/;"	v	typeref:typename:uint8_t[]	file:
+ring_count	i2c_hs_slave.c	/^static inline uint32_t ring_count(void){ return (wr_idx - rd_idx) & (HS_SLAVE_RING_BYTES - 1); }$/;"	f	typeref:typename:uint32_t	file:
+rmask	i2c_hs_slave.c	/^static inline uint32_t rmask(uint32_t v){ return v & (HS_SLAVE_RING_BYTES - 1); }$/;"	f	typeref:typename:uint32_t	file:
+scl_pin	i2c_hs_slave.h	/^    uint  scl_pin;$/;"	m	struct:__anon81e5b02d0108	typeref:typename:uint
+scl_pin_g	i2c_hs_slave.c	/^static uint sda_pin_g = 0, scl_pin_g = 1;$/;"	v	typeref:typename:uint	file:
+sda_pin	i2c_hs_slave.h	/^    uint  sda_pin;$/;"	m	struct:__anon81e5b02d0108	typeref:typename:uint
+sda_pin_g	i2c_hs_slave.c	/^static uint sda_pin_g = 0, scl_pin_g = 1;$/;"	v	typeref:typename:uint	file:
+sm	i2c_hs_slave.h	/^    uint  sm;$/;"	m	struct:__anon81e5b02d0108	typeref:typename:uint
+stop_flag	i2c_hs_slave.c	/^static volatile bool stop_flag = false;$/;"	v	typeref:typename:volatile bool	file:
+wait_byte_blocking	main.c	/^wait_byte_blocking (void)$/;"	f	typeref:typename:int	file:
+wr_idx	i2c_hs_slave.c	/^static volatile uint32_t wr_idx = 0, rd_idx = 0;$/;"	v	typeref:typename:volatile uint32_t	file:

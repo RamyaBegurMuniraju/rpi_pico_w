@@ -175,9 +175,9 @@ int main() {
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 
-#define I2C_PORT        i2c1
-#define I2C_SDA_PIN     6
-#define I2C_SCL_PIN     7
+#define I2C_PORT        i2c0
+#define I2C_SDA_PIN     4
+#define I2C_SCL_PIN     5
 #define SLAVE_ADDR      0x17
 
 #define CHUNK_SIZE      1024

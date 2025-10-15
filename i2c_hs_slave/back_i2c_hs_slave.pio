@@ -1,0 +1,62 @@
+; RP2040 PIO I2C High-Speed (3.4 MHz) TARGET (slave), RX-only with ACK in PIO
+; Pins:
+;   - IN base  : SDA        (so pin index 0 = SDA, 1 = SCL)
+;   - JMP pin  : SCL        (so 'jmp pin' tests SCL)
+;   - SET base : SDA (1 pin)  used to toggle OE for ACK (drive low/release)
+;
+; Assumes SCL == SDA + 1 so IN index 1 maps to SCL.
+; CPU detects STOP (SDA↑ while SCL=1) via GPIO interrupt; PIO just streams bytes.
+
+.program i2c_hs_slave_rx
+
+% c-sdk {
+#include "hardware/pio.h"
+#include "hardware/gpio.h"
+
+static inline void i2c_hs_slave_rx_program_init(PIO pio, uint sm, uint offset,
+                                                uint sda_pin, uint scl_pin){
+    pio_sm_config c = i2c_hs_slave_rx_program_get_default_config(offset);
+    sm_config_set_in_pins(&c,  sda_pin);           // IN pin group base = SDA
+    sm_config_set_jmp_pin(&c,  scl_pin);           // JMP pin = SCL
+    sm_config_set_set_pins(&c, sda_pin, 1);        // SET/dir control on SDA
+    //sm_config_set_in_shift(&c, true, true, 8);     // shift-right, autopush @8
+    sm_config_set_in_shift(&c, false, true, 8);  // shift-left, autopush@8   ✅
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_RX); // deeper RX FIFO
+    sm_config_set_clkdiv(&c, 1.0f);                // run fast; SCL gates us
+
+    // Prepare pins for PIO control and ensure SDA output value is 0 (for ACK)
+    pio_gpio_init(pio, sda_pin);
+    pio_gpio_init(pio, scl_pin);
+
+    pio_sm_set_pins_with_mask(pio, sm, 0u, 1u << sda_pin); // SDA output level = 0
+    pio_sm_set_pindirs_with_mask(pio, sm, 0u,    1u << sda_pin); // SDA direction = input (released)
+    pio_sm_init(pio, sm, offset, &c);
+}
+%}
+
+; -------- START detect (SDA 1->0 while SCL=1) ----------
+boot:         set pindirs, 0
+idle:         wait 1 pin, 0         ; SDA high (bus idle)
+start_wait:   wait 0 pin, 0         ; SDA fell
+              jmp pin start_ok      ; if SCL==1, it's a START
+              ;jmp start_wait//ramya
+start_ok:
+newbyte:      set x, 7              ; 8 bits per byte
+
+; -------- Bit loop (sample on SCL rising edge) ----------
+bitloop:
+wlow:         jmp pin wlow          ; wait for SCL low
+whigh:        jmp pin sample        ; when SCL high -> sample
+              jmp whigh
+sample:       in pins, 1            ; sample SDA (MSB first)
+fall:         jmp pin fall          ; wait SCL fall (end of bit)
+              jmp x-- bitloop       ; next bit, or fall through when done
+
+; -------- ACK on 9th clock (drive SDA low while SCL high) ----------
+ack_drive:    set pindirs, 1        ; drive SDA low (value already 0)
+ack_wait_hi:  jmp pin ack_hold      ; wait for SCL high
+              jmp ack_wait_hi
+ack_hold:     jmp pin ack_hold      ; hold until SCL falls
+              set pindirs, 0        ; release (open-drain)
+              jmp newbyte           ; next byte (addr or data)
+

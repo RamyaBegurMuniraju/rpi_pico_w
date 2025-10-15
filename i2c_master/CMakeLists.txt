@@ -15,7 +15,7 @@ target_link_libraries(i2c_data
     #hardware_adc
     hardware_i2c
     hardware_dma
-	pico_multicore
+    pico_multicore
     )
 target_include_directories(i2c_data PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}

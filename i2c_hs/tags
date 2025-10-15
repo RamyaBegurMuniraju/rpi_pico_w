@@ -1,0 +1,99 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/ramya/rpi_pico_w/i2c_hs/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	//
+BIG	back/main.c	/^    enum { BIG = 4096 };$/;"	e	enum:main::__anon73d6009b0103	file:
+CHUNK	master.c	/^#define CHUNK /;"	d	file:
+CHUNK_BYTES	back/master_hs_2mb.c	/^#define CHUNK_BYTES /;"	d	file:
+DMA_BLOCK_BYTES	back/slave_dma_rx.c	/^#define DMA_BLOCK_BYTES /;"	d	file:
+I2C_ADDR	back/main.c	/^#define I2C_ADDR /;"	d	file:
+I2C_ADDR	back/master_hs_2mb.c	/^#define I2C_ADDR /;"	d	file:
+I2C_ADDR	back/slave_dma_rx.c	/^#define I2C_ADDR /;"	d	file:
+I2C_PORT	back/slave_dma_rx.c	/^#define I2C_PORT /;"	d	file:
+NUM_CHUNKS	back/master_hs_2mb.c	/^#define NUM_CHUNKS /;"	d	file:
+PIN_HS_EN	back/main.c	/^#define PIN_HS_EN /;"	d	file:
+PIN_HS_EN	back/master_hs_2mb.c	/^#define PIN_HS_EN /;"	d	file:
+PIN_HS_EN	master.c	/^#define PIN_HS_EN /;"	d	file:
+PIO_I2C_DATA_LSB	pio_i2c_hs.h	/^#define PIO_I2C_DATA_LSB /;"	d
+PIO_I2C_FINAL_LSB	pio_i2c_hs.h	/^#define PIO_I2C_FINAL_LSB /;"	d
+PIO_I2C_ICOUNT_LSB	pio_i2c_hs.h	/^#define PIO_I2C_ICOUNT_LSB /;"	d
+PIO_I2C_NAK_LSB	pio_i2c_hs.h	/^#define PIO_I2C_NAK_LSB /;"	d
+PIO_USE	back/main.c	/^#define PIO_USE /;"	d	file:
+RING_BYTES	back/slave_dma_rx.c	/^#define RING_BYTES /;"	d	file:
+SCL_PIN	back/main.c	/^#define SCL_PIN /;"	d	file:
+SCL_PIN	back/master_hs_2mb.c	/^#define SCL_PIN /;"	d	file:
+SCL_PIN	back/slave_dma_rx.c	/^#define SCL_PIN /;"	d	file:
+SCL_PIN	master.c	/^#define SCL_PIN /;"	d	file:
+SDA_PIN	back/main.c	/^#define SDA_PIN /;"	d	file:
+SDA_PIN	back/master_hs_2mb.c	/^#define SDA_PIN /;"	d	file:
+SDA_PIN	back/slave_dma_rx.c	/^#define SDA_PIN /;"	d	file:
+SDA_PIN	master.c	/^#define SDA_PIN /;"	d	file:
+SM_USE	back/main.c	/^#define SM_USE /;"	d	file:
+TARGET_ADDR	master.c	/^#define TARGET_ADDR /;"	d	file:
+TOTAL	master.c	/^#define TOTAL /;"	d	file:
+TOTAL_BYTES	back/master_hs_2mb.c	/^#define TOTAL_BYTES /;"	d	file:
+USE_PIO	back/master_hs_2mb.c	/^#define USE_PIO /;"	d	file:
+USE_SM	back/master_hs_2mb.c	/^#define USE_SM /;"	d	file:
+_PIO_I2C_H	pio_i2c_hs.h	/^#define _PIO_I2C_H$/;"	d
+__anon73d6009b0103	back/main.c	/^    enum { BIG = 4096 };$/;"	g	function:main	file:
+build_words_from_bytes	back/main.c	/^static int build_words_from_bytes(const uint8_t *src, size_t len, uint16_t **out_words){$/;"	f	typeref:typename:int	file:
+build_words_from_bytes	back/master_hs_2mb.c	/^static void build_words_from_bytes(const uint8_t *src, size_t len, uint16_t *words){$/;"	f	typeref:typename:void	file:
+dma_ch	back/slave_dma_rx.c	/^static int dma_ch = -1;$/;"	v	typeref:typename:int	file:
+dma_chan	pio_i2c_hs.c	/^  uint dma_chan;$/;"	m	struct:pio_i2c_irq_info_struct	typeref:typename:uint	file:
+dma_config_for_pio_tx	back/main.c	/^static void dma_config_for_pio_tx(PIO pio, uint sm, int dma_ch, const uint16_t *words, size_t n_/;"	f	typeref:typename:void	file:
+dma_config_for_pio_tx	back/master_hs_2mb.c	/^static void dma_config_for_pio_tx(PIO pio, uint sm, int dma_ch,$/;"	f	typeref:typename:void	file:
+dma_error	pio_i2c_hs.c	/^  bool dma_error;$/;"	m	struct:pio_i2c_irq_info_struct	typeref:typename:bool	file:
+dma_irq_handler	back/slave_dma_rx.c	/^static void __isr dma_irq_handler(void){$/;"	f	typeref:typename:void __isr	file:
+dma_ongoing	pio_i2c_hs.c	/^  bool dma_ongoing;$/;"	m	struct:pio_i2c_irq_info_struct	typeref:typename:bool	file:
+fill_pattern	master.c	/^static void fill_pattern(uint8_t *buf, size_t off, size_t len){$/;"	f	typeref:typename:void	file:
+i2c_irq_handler	pio_i2c_hs.c	/^void i2c_irq_handler() {$/;"	f	typeref:typename:void
+i2c_irq_handler_internal	pio_i2c_hs.c	/^void i2c_irq_handler_internal(PIO pio, uint sm, uint pin_hs, uint dma_chan) {$/;"	f	typeref:typename:void
+i2c_slave_init_with_dma	back/slave_dma_rx.c	/^static void i2c_slave_init_with_dma(void){$/;"	f	typeref:typename:void	file:
+main	back/main.c	/^int main(void){$/;"	f	typeref:typename:int
+main	back/master_hs_2mb.c	/^int main(void){$/;"	f	typeref:typename:int
+main	back/slave_dma_rx.c	/^int main(void){$/;"	f	typeref:typename:int
+main	master.c	/^int main() {$/;"	f	typeref:typename:int
+master_hs	CMakeLists.txt	/^add_executable(master_hs$/;"	t
+master_hs	back/CMakeLists.txt	/^add_executable(master_hs$/;"	t
+master_hs_2mb	back/CMakeLists.txt	/^add_executable(master_hs_2mb$/;"	t
+next_dst	back/slave_dma_rx.c	/^static uint32_t next_dst = 0;$/;"	v	typeref:typename:uint32_t	file:
+pin_hs	pio_i2c_hs.c	/^  uint pin_hs;$/;"	m	struct:pio_i2c_irq_info_struct	typeref:typename:uint	file:
+pio	pio_i2c_hs.c	/^  PIO pio;$/;"	m	struct:pio_i2c_irq_info_struct	typeref:typename:PIO	file:
+pio_i2c_check_error	pio_i2c_hs.c	/^bool pio_i2c_check_error(PIO pio, uint sm) {$/;"	f	typeref:typename:bool
+pio_i2c_disable_sys_irq	pio_i2c_hs.c	/^int pio_i2c_disable_sys_irq(PIO pio, uint sm) {$/;"	f	typeref:typename:int
+pio_i2c_dma_check_error	pio_i2c_hs.c	/^bool pio_i2c_dma_check_error(PIO pio, uint sm) {$/;"	f	typeref:typename:bool
+pio_i2c_dma_ongoing	pio_i2c_hs.c	/^bool pio_i2c_dma_ongoing(PIO pio, uint sm) {$/;"	f	typeref:typename:bool
+pio_i2c_dma_ongoing_any	pio_i2c_hs.c	/^bool pio_i2c_dma_ongoing_any() {$/;"	f	typeref:typename:bool
+pio_i2c_dma_stop	pio_i2c_hs.c	/^int pio_i2c_dma_stop(PIO pio, uint sm, uint pin_hs, uint dma_chan) {$/;"	f	typeref:typename:int
+pio_i2c_enable_sys_irq	pio_i2c_hs.c	/^int pio_i2c_enable_sys_irq(PIO pio, uint sm, uint pin_hs, uint dma_chan) {$/;"	f	typeref:typename:int
+pio_i2c_get	pio_i2c_hs.c	/^uint8_t pio_i2c_get(PIO pio, uint sm) {$/;"	f	typeref:typename:uint8_t
+pio_i2c_irq_info	pio_i2c_hs.c	/^} pio_i2c_irq_info = { .dma_ongoing = false, .dma_error = false };$/;"	v	typeref:struct:pio_i2c_irq_info_struct
+pio_i2c_irq_info_struct	pio_i2c_hs.c	/^struct pio_i2c_irq_info_struct {$/;"	s	file:
+pio_i2c_prepare_byte	pio_i2c_hs.h	/^#define pio_i2c_prepare_byte(/;"	d
+pio_i2c_prepare_instr	pio_i2c_hs.h	/^#define pio_i2c_prepare_instr(/;"	d
+pio_i2c_put16	pio_i2c_hs.c	/^static inline void pio_i2c_put16(PIO pio, uint sm, uint16_t data) {$/;"	f	typeref:typename:void	file:
+pio_i2c_put_or_err	pio_i2c_hs.c	/^void pio_i2c_put_or_err(PIO pio, uint sm, uint16_t data) {$/;"	f	typeref:typename:void
+pio_i2c_read_blocking	pio_i2c_hs.c	/^int pio_i2c_read_blocking(PIO pio, uint sm, uint pin_hs, uint8_t addr, uint8_t *rxbuf, uint len)/;"	f	typeref:typename:int
+pio_i2c_resume_after_error	pio_i2c_hs.c	/^void pio_i2c_resume_after_error(PIO pio, uint sm) {$/;"	f	typeref:typename:void
+pio_i2c_rx_enable	pio_i2c_hs.c	/^void pio_i2c_rx_enable(PIO pio, uint sm, bool en) {$/;"	f	typeref:typename:void
+pio_i2c_start	pio_i2c_hs.c	/^void pio_i2c_start(PIO pio, uint sm, uint pin_hs) {$/;"	f	typeref:typename:void
+pio_i2c_stop	pio_i2c_hs.c	/^void pio_i2c_stop(PIO pio, uint sm, uint pin_hs) {$/;"	f	typeref:typename:void
+pio_i2c_wait_idle	pio_i2c_hs.c	/^static void pio_i2c_wait_idle(PIO pio, uint sm) {$/;"	f	typeref:typename:void	file:
+pio_i2c_write_blocking	pio_i2c_hs.c	/^int pio_i2c_write_blocking(PIO pio, uint sm, uint pin_hs, uint8_t addr, uint8_t *txbuf, uint len/;"	f	typeref:typename:int
+pio_i2c_write_dma_start	pio_i2c_hs.c	/^int pio_i2c_write_dma_start(PIO pio, uint sm, uint pin_hs, uint8_t addr, uint dma_chan) {$/;"	f	typeref:typename:int
+ring_avail	back/slave_dma_rx.c	/^static inline uint32_t ring_avail(uint32_t r_off){$/;"	f	typeref:typename:uint32_t	file:
+ring_buf	back/slave_dma_rx.c	/^static __attribute__((aligned(4))) uint8_t ring_buf[RING_BYTES];$/;"	v	typeref:typename:uint8_t[]	file:
+slave_dma_rx	back/CMakeLists.txt	/^add_executable(slave_dma_rx$/;"	t
+sm	pio_i2c_hs.c	/^  uint sm;$/;"	m	struct:pio_i2c_irq_info_struct	typeref:typename:uint	file:
+start_dma	back/slave_dma_rx.c	/^static void start_dma(uint32_t dst_off){$/;"	f	typeref:typename:void	file:
+total_rx	back/slave_dma_rx.c	/^static volatile uint32_t total_rx = 0;          \/\/ total bytes received$/;"	v	typeref:typename:volatile uint32_t	file:
+tx_chunk	back/master_hs_2mb.c	/^static uint8_t  tx_chunk[CHUNK_BYTES];$/;"	v	typeref:typename:uint8_t[]	file:
+tx_words	back/master_hs_2mb.c	/^static uint16_t tx_words[CHUNK_BYTES]; \/\/ 1 halfword per byte$/;"	v	typeref:typename:uint16_t[]	file:
+wr_off	back/slave_dma_rx.c	/^static volatile uint32_t wr_off = 0;            \/\/ producer write offset (bytes)$/;"	v	typeref:typename:volatile uint32_t	file:

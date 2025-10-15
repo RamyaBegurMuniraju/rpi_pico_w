@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
 
 add_executable(picow_i2c_to_l2cap
-	classic.c
+		classic.c
+	#pico_source_test.c
 )
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/lib/pico_i2c_slave)

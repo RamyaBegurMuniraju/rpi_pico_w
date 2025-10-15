@@ -1,0 +1,56 @@
+.program i2c_hs_slave_rx
+
+% c-sdk {
+#include "hardware/pio.h"
+#include "hardware/gpio.h"
+
+static inline void i2c_hs_slave_rx_program_init(PIO pio, uint sm, uint offset,
+                                                uint sda_pin, uint scl_pin){
+    pio_sm_config c = i2c_hs_slave_rx_program_get_default_config(offset);
+    sm_config_set_in_pins(&c,  sda_pin);           // pin index 0 = SDA, 1 = SCL
+    sm_config_set_jmp_pin(&c,  scl_pin);           // 'jmp pin' tests SCL
+    sm_config_set_set_pins(&c, sda_pin, 1);        // SET controls SDA dir (ACK)
+    sm_config_set_in_shift(&c, false, true, 8);    // SHIFT-LEFT, autopush @8  (LSByte holds byte)
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_RX);
+    sm_config_set_clkdiv(&c, 1.0f);
+
+    // Prepare GPIOs
+    pio_gpio_init(pio, sda_pin);
+    pio_gpio_init(pio, scl_pin);
+
+    // Start released: SDA value=0 when driven, DIR=input initially
+    pio_sm_set_pins_with_mask   (pio, sm, 0u, 1u << sda_pin);
+    pio_sm_set_pindirs_with_mask(pio, sm, 0u, 1u << sda_pin);
+
+    pio_sm_init(pio, sm, offset, &c);
+}
+%}
+
+; -------- ensure SDA released on entry ----------
+boot:         set pindirs, 0
+
+; -------- START detect (SDA 1->0 while SCL==1) ----------
+idle:         wait 1 pin, 0         ; SDA high (pin idx 0 = SDA)
+start_wait:   wait 0 pin, 0         ; SDA fell
+              jmp pin start_ok      ; if SCL (jmp-pin) high -> START
+              jmp start_wait
+start_ok:
+
+newbyte:      set x, 7              ; 8 bits
+
+; -------- Bit loop: wait SCL rising, sample SDA, wait SCL low ----------
+wait_low:     jmp pin wait_low      ; spin while SCL high -> wait for low
+wait_high:    jmp pin sample        ; when SCL high, sample
+              jmp wait_high
+sample:       in pins, 1            ; SHIFT-LEFT, so LSBit accumulates up to bit7
+fall:         jmp pin fall          ; hold until SCL falls (end of bit)
+              jmp x-- wait_low      ; next bit, or fall through at x == -1
+
+; -------- ACK on 9th clock: pull SDA low while SCL high ----------
+ack_drive:    set pindirs, 1        ; drive SDA low (value already 0)
+ack_wait_hi:  jmp pin ack_hold      ; wait SCL high
+              jmp ack_wait_hi
+ack_hold:     jmp pin ack_hold      ; hold until SCL falls
+              set pindirs, 0        ; release SDA
+              jmp newbyte           ; keep receiving indefinitely
+
