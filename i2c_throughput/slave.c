@@ -17,9 +17,9 @@
 
 
 // ---------------- CONFIG ----------------
-#define I2C_PORT   i2c1
-#define SDA_PIN    6
-#define SCL_PIN    7
+#define I2C_PORT   i2c0
+#define SDA_PIN    4
+#define SCL_PIN    5
 #define SLAVE_ADDR 0x17
 
 #define RING_SIZE  (64 * 1024)
@@ -65,7 +65,7 @@ i2c_slave_isr(i2c_inst_t *i2c, i2c_slave_event_t event)
 int main() {
     stdio_init_all();
     stdio_usb_init();
-    sleep_ms(1000);
+    sleep_ms(2000);
     printf("Pico W I2C Slave using uptime timestamps (addr 0x%02X)\n", SLAVE_ADDR);
 
     // ---- Configure pins ----
@@ -75,7 +75,14 @@ int main() {
     gpio_pull_up(SCL_PIN);
 
     // ---- Initialize I2C slave ----
+    i2c_init(I2C_PORT, 3.4 * 1000 * 1000);               // 1 MHz (fast-mode plus on good wiring)
     i2c_slave_init(I2C_PORT, SLAVE_ADDR, &i2c_slave_isr);
+      // init target mode
+    //i2c_init(I2C_PORT,  1000 * 1000);               // 1 MHz (fast-mode plus on good wiring)
+    //i2c_init(I2C_PORT, 400000);               // 1 MHz (fast-mode plus on good wiring)
+    //i2c_init(I2C_PORT, 100000);               // 1 MHz (fast-mode plus on good wiring)
+
+
 
     // ---- Stats ----
     uint64_t total_bytes = 0;
@@ -99,8 +106,8 @@ int main() {
             }
         }
 
-        // Only print when receiving data
         if (got_data) {
+        //printf("// Only print when receiving data\n");
             receiving = true;
         } else if (receiving) {
             receiving = false;

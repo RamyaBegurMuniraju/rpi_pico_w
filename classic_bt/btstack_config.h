@@ -18,6 +18,8 @@
 
 //#define HCI_ACL_PAYLOAD_SIZE            1021
 
+//Enahnced Retransmission
+#define ENABLE_L2CAP_ENHANCED_RETRANSMISSION_MODE
 
 // ---- L2CAP / storage ----
 //#define L2CAP_MTU                     65535 
@@ -39,6 +41,8 @@
 // === Classic Bluetooth ===
 #define ENABLE_L2CAP_ERTM                1
 
+//#define NVM_NUM_LINK_KEYS          8
+//#define NVM_NUM_DEVICE_DB_ENTRIES  8
 
 #endif
 

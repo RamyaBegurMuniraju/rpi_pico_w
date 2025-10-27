@@ -1,26 +1,23 @@
 cmake_minimum_required(VERSION 3.28)
 
 add_executable(picow_i2c_to_l2cap
-		classic.c
+	classic.c
 	#pico_source_test.c
+	#slave.c
 )
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/lib/pico_i2c_slave)
 
 # Classic-only BTstack libs + CYW43 transport
 target_link_libraries(picow_i2c_to_l2cap
-    pico_stdio_usb
     pico_stdlib
     pico_btstack_classic
     pico_btstack_cyw43
     pico_cyw43_arch_none
-    #hardware_adc
     hardware_i2c
     hardware_dma
-    hardware_irq
-    pico_i2c_slave      # from pico-extras
-    pico_multicore       # <-- add this line
-    pico_btstack_flash_bank
+   hardware_irq
+ pico_cyw43_arch_threadsafe_background
 )
 
 target_include_directories(picow_i2c_to_l2cap PRIVATE

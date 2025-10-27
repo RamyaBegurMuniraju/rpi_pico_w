@@ -19,14 +19,17 @@ int main(){
     sleep_ms(1000);
     printf("I2C Master: send %u bytes to 0x%02X\n", (unsigned)TOTAL_BYTES, SLAVE_ADDR);
 
+    //i2c_init(I2C_PORT, 4 * 1000 * 1000); // 3.4 MHz 
     i2c_init(I2C_PORT, 3.4 * 1000 * 1000); // 3.4 MHz 
     //i2c_init(I2C_PORT,  1000 * 1000); // 1 MHz
+    //i2c_init(I2C_PORT,  400000); // 1 MHz
+    //i2c_init(I2C_PORT,  100000);
     gpio_set_function(SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(SCL_PIN, GPIO_FUNC_I2C);
     gpio_pull_up(SDA_PIN);
     gpio_pull_up(SCL_PIN);
 
-    for (int i = 0; i < BLOCK_SIZE; i++) buf[i] = (uint8_t)i;
+    for (int i = 0; i < BLOCK_SIZE; i++) buf[i] = (uint8_t)0xAA;
 
     uint32_t remaining = TOTAL_BYTES;
     absolute_time_t t0 = get_absolute_time();

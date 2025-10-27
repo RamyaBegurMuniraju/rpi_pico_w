@@ -191,7 +191,8 @@ int main() {
     sleep_ms(1000);
 
     // Init I2C master @ 400kHz (can try 1MHz or 3.4MHz if stable)
-    i2c_init(I2C_PORT, 3.4 * 1000 * 1000);
+    //i2c_init(I2C_PORT, 3.4 * 1000 * 1000);
+    i2c_init(I2C_PORT, 1000 * 1000);
     gpio_set_function(I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(I2C_SCL_PIN, GPIO_FUNC_I2C);
     gpio_pull_up(I2C_SDA_PIN);

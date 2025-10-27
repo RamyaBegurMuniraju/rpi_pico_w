@@ -33,7 +33,7 @@ static volatile uint32_t dma_irq_count = 0; // debug
 #define L2CAP_TX_MTU    4096              // safe Classic default
 //#define L2CAP_TX_MTU    1024              // safe Classic default
 
-//#define TESTING  0
+#define TESTING  1
 static uint16_t l2cap_cid = 0;
 static uint16_t remote_mtu = L2CAP_TX_MTU;
 static uint8_t  tx_buf[L2CAP_TX_MTU];
@@ -110,7 +110,7 @@ static void i2c_slave_init_dma(void){
     gpio_pull_up(SCL_PIN);
 
     // even in slave mode, i2c_init() powers/configures the block
-    i2c_init(I2C_PORT, 1000000);                 // value irrelevant in slave mode
+    i2c_init(I2C_PORT, 1000 * 1000);                 // value irrelevant in slave mode
     i2c_set_slave_mode(I2C_PORT, true, I2C_SLAVE_ADDR);
 
     // Enable RX-DMA on the I2C block
@@ -156,7 +156,7 @@ static bool l2cap_try_send_once(void){
     if (tail) memcpy(tx_buf + first, &ring_buf[0], tail);
 
 //#if TESTING 
- //hexdump(tx_buf, to_send);
+// hexdump(tx_buf, to_send);
 //#endif
     if (l2cap_send(l2cap_cid, tx_buf, to_send) == 0){
         ring_consume(to_send);
@@ -214,6 +214,9 @@ static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packe
         case L2CAP_EVENT_CHANNEL_CLOSED:
             printf("L2CAP closed\n");
             l2cap_cid = 0;
+            gap_set_class_of_device(0x2c010c);
+            gap_discoverable_control(1);
+            gap_connectable_control(1);
             break;
 
         case L2CAP_EVENT_CAN_SEND_NOW:

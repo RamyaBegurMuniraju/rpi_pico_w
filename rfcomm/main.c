@@ -32,9 +32,11 @@ static volatile uint32_t dma_irq_count = 0;
 // ---------------- RFCOMM / SPP ----------------
 #define RFCOMM_CHANNEL 1
 static uint16_t rfcomm_cid = 0;
-static uint16_t rfcomm_mtu = 1024;           // will be updated on open
-static uint8_t  tx_buf[1024];                // stage buffer (<= RFCOMM MTU)
+//static uint16_t rfcomm_mtu = 1024;           // will be updated on open
+//static uint8_t  tx_buf[1024];                // stage buffer (<= RFCOMM MTU)
 
+static uint16_t rfcomm_mtu = 2048;           // will be updated on open
+static uint8_t  tx_buf[2048];                // stage buffer (<= RFCOMM MTU)
 static uint8_t  spp_service_buf[200];
 static btstack_packet_callback_registration_t hci_cb;
 
@@ -90,7 +92,9 @@ static void i2c_slave_init_dma(void){
     gpio_pull_up(SDA_PIN);
     gpio_pull_up(SCL_PIN);
 
+    //i2c_init(I2C_PORT, 3.4 *1000 * 1000);
     i2c_init(I2C_PORT, 1000000);
+    //i2c_init(I2C_PORT, 4 * 1000000);
     i2c_set_slave_mode(I2C_PORT, true, I2C_SLAVE_ADDR);
 
     i2c_hw_t *hw = i2c_get_hw(I2C_PORT);
