@@ -1,5 +1,6 @@
 add_executable(picow_i2c_dma_to_spp
-	main.c
+	#main.c
+	rfcomm.c
 	#server.c
 )
 

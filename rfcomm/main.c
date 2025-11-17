@@ -20,6 +20,7 @@
 
 #define RING_BYTES          (192 * 1024)      // 192 KiB
 #define DMA_BLOCK_BYTES     8192              // 8 KiB per DMA IRQ
+//#define DMA_BLOCK_BYTES     1024              // 8 KiB per DMA IRQ
 
 static uint8_t  ring_buf[RING_BYTES];
 static volatile uint32_t rd_offset = 0;
@@ -28,6 +29,7 @@ static int      dma_ch = -1;
 static volatile uint32_t wr_off = 0;
 static uint32_t next_dst = 0;
 static volatile uint32_t dma_irq_count = 0;
+
 
 // ---------------- RFCOMM / SPP ----------------
 #define RFCOMM_CHANNEL 1
@@ -92,8 +94,8 @@ static void i2c_slave_init_dma(void){
     gpio_pull_up(SDA_PIN);
     gpio_pull_up(SCL_PIN);
 
-    //i2c_init(I2C_PORT, 3.4 *1000 * 1000);
-    i2c_init(I2C_PORT, 1000000);
+    i2c_init(I2C_PORT, 3.4 *1000 * 1000);
+    //i2c_init(I2C_PORT, 1000 * 1000);
     //i2c_init(I2C_PORT, 4 * 1000000);
     i2c_set_slave_mode(I2C_PORT, true, I2C_SLAVE_ADDR);
 

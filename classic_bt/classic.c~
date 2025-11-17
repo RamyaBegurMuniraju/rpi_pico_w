@@ -17,8 +17,7 @@
 
 // Ring buffer (no DMA address wrap; we manage wrap in software)
 #define RING_BYTES          (192 * 1024)	// 96 KB
-//#define DMA_BLOCK_BYTES     4096
-#define DMA_BLOCK_BYTES    1024 
+#define DMA_BLOCK_BYTES     4096
 //#define DMA_BLOCK_BYTES     8192
 
 static uint8_t ring_buf[RING_BYTES];
@@ -32,8 +31,8 @@ static volatile uint32_t dma_irq_count = 0;	// debug
 
 // ---------------- BT CLASSIC L2CAP CONFIG ----------------
 #define L2CAP_PSM       0x1001
-//#define L2CAP_TX_MTU    4096	// safe Classic default
-#define L2CAP_TX_MTU    1024              // safe Classic default
+#define L2CAP_TX_MTU    4096	// safe Classic default
+//#define L2CAP_TX_MTU    1024              // safe Classic default
 
 #define TESTING  1
 static uint16_t l2cap_cid = 0;
@@ -41,53 +40,21 @@ static uint16_t remote_mtu = L2CAP_TX_MTU;
 static uint8_t tx_buf[L2CAP_TX_MTU];
 static btstack_packet_callback_registration_t hci_cb;
 
-#if 1
-
-
 
 // your BTstack's ERTM config layout
 static l2cap_ertm_config_t ertm_config = {
-  .ertm_mandatory = 0,          // 0 = allow basic or ertm, remote can decide // 1 = is mandatory
-  .max_transmit = 8,           // retry up to 10 times
-  .retransmission_timeout_ms = 2000,   // retransmission timeout
-  .monitor_timeout_ms = 12000,  //
-  .local_mtu = 1024,            //1017,     // MUST be <= ACL pakcet size controller can do
-  .num_tx_buffers = 20,         // how many outgoing
-  .num_rx_buffers = 5,         // how many out-of-order we can receive
-  .fcs_option = 1,              // 0 = no FCS (keep it simple first)
+  .ertm_mandatory = 0,		// 0 = allow basic or ertm, remote can decide // 1 = is mandatory 
+  .max_transmit = 10,		// retry up to 10 times
+  .retransmission_timeout_ms = 10000,	// retransmission timeout 
+  .monitor_timeout_ms = 50000,	// 
+  .local_mtu = 4096,		//1017,     // MUST be <= ACL pakcet size controller can do
+  .num_tx_buffers = 10,		// how many outgoing
+  .num_rx_buffers = 10,		// how many out-of-order we can receive
+  .fcs_option = 0,		// 0 = no FCS (keep it simple first)
 };
 
 // working buffer for ERTM reassembly etc.
 static uint8_t ertm_buffer[16 * 1024];
-
-// working buffer for ERTM reassembly etc.
-static uint8_t ertm_buffer[16 * 1024];
-#endif
-
-#if 0
-// your BTstack's ERTM config layout
-static l2cap_ertm_config_t ertm_config = {
-  .ertm_mandatory = 1,		// 0 = allow basic or ertm, remote can decide // 1 = is mandatory 
-  .max_transmit = 12,		// retry up to 10 times
-  .retransmission_timeout_ms = 300,	// retransmission timeout 
-  .monitor_timeout_ms = 1500,	// 
-  .local_mtu = 768,		//1017,     // MUST be <= ACL pakcet size controller can do
-  .num_tx_buffers = 5,		// how many outgoing
-  .num_rx_buffers = 20,		// how many out-of-order we can receive
-  .fcs_option = 1,		// 0 = no FCS (keep it simple first)
-};
-
-// working buffer for ERTM reassembly etc.
-static uint8_t ertm_buffer[16 * 1024];
-#endif
-
-// backpressure flag: true when DMA is currently active
-static volatile bool dma_running = false;
-
-// for the no-drop L2CAP pump
-static uint8_t  pending_buf[L2CAP_TX_MTU];
-static uint16_t pending_len = 0;
-static bool     has_pending = false;
 
 
 // ---------------- Utils ----------------
@@ -110,10 +77,6 @@ ring_consume (uint32_t n)
   rd_offset = (rd_offset + n) % RING_BYTES;
 }
 
-// NEW:
-static inline uint32_t ring_free(void){
-    return RING_BYTES - ring_avail();
-}
 // ---------------- DMA: one channel -> ring ----------------
 static void
 start_dma_transfer (int ch, uint32_t dst_off_bytes)
@@ -137,9 +100,8 @@ start_dma_transfer (int ch, uint32_t dst_off_bytes)
 
   dma_channel_set_irq0_enabled (ch, true);
   dma_start_channel_mask (1u << ch);
-  dma_running = true;
 }
-#if 0
+
 static void __isr
 dma_irq_handler (void)
 {
@@ -155,25 +117,6 @@ dma_irq_handler (void)
       start_dma_transfer (dma_ch, next_dst);
     }
 }
-#endif
-
-static void __isr dma_irq_handler(void){
-    if (dma_channel_get_irq0_status(dma_ch)){
-        dma_channel_acknowledge_irq0(dma_ch);
-
-        wr_off   = (wr_off   + DMA_BLOCK_BYTES) % RING_BYTES;
-        next_dst = (next_dst + DMA_BLOCK_BYTES) % RING_BYTES;
- 	dma_irq_count++;
-        // if not enough free space for another 1 KB block, DON'T restart DMA
-        if (ring_free() < DMA_BLOCK_BYTES) {
-            dma_running = false;   // <- global flag
-            // stop here: don't call start_dma_transfer(...)
-        } else {
-            start_dma_transfer(dma_ch, next_dst);
-        }
-    }
-}
-
 
 static void
 dma_init_and_start (void)
@@ -229,7 +172,6 @@ hexdump (const uint8_t *p, uint32_t n)
     printf ("\n");
 }
 
-#if 0
 // ---------------- L2CAP SEND PUMP ----------------
 static bool
 l2cap_try_send_once (void)
@@ -273,60 +215,6 @@ l2cap_try_send_once (void)
     }
   return false;
 }
-#endif
-static bool l2cap_try_send_once(void)
-{
-    if (!l2cap_cid)
-        return false;
-
-    if (!l2cap_can_send_packet_now(l2cap_cid))
-        return false;
-
-    // 1) send pending first
-    if (has_pending) {
-        if (l2cap_send(l2cap_cid, pending_buf, pending_len) == 0) {
-            has_pending = false;
-            if (ring_avail() > 0)
-                l2cap_request_can_send_now_event(l2cap_cid);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // 2) pull from ring
-    uint32_t avail = ring_avail();
-    if (!avail)
-        return false;
-
-    uint32_t to_send = avail;
-    if (to_send > remote_mtu)   to_send = remote_mtu;
-    if (to_send > L2CAP_TX_MTU) to_send = L2CAP_TX_MTU;
-
-    uint32_t rd    = rd_offset;
-    uint32_t first = to_send;
-    uint32_t tail  = 0;
-    if (rd + to_send > RING_BYTES) {
-        first = RING_BYTES - rd;
-        tail  = to_send - first;
-    }
-    memcpy(pending_buf, &ring_buf[rd], first);
-    if (tail)
-        memcpy(pending_buf + first, &ring_buf[0], tail);
-
-    if (l2cap_send(l2cap_cid, pending_buf, to_send) == 0) {
-        ring_consume(to_send);
-        if (ring_avail() > 0)
-            l2cap_request_can_send_now_event(l2cap_cid);
-    } else {
-        pending_len = to_send;
-        has_pending = true;
-    }
-
-    return true;
-}
-
-int count = 0;
 
 // ---------------- BTSTACK HANDLERS ----------------
 static void
@@ -365,10 +253,9 @@ packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *packet,
 	  // return params format: status (1), handle (2), tx_power (1)
 	  const uint8_t *params =
 	    hci_event_command_complete_get_return_parameters (packet);
-	  printf ("raw data last byte is tx power: %02x %02x %02x %02x\n", params[0], params[1],
-		  params[2], params[3]);
+    printf("raw: %02x %02x %02x %02x\n", params[0], params[1], params[2], params[3]);
 
-	}
+		}
       break;
 
 
@@ -429,9 +316,7 @@ packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *packet,
 
     case L2CAP_EVENT_CHANNEL_CLOSED:
       printf ("L2CAP closed\n");
-      printf("send_now count = %d\n", count);
       l2cap_cid = 0;
-      count = 0;
       gap_set_class_of_device (0x2c010c);
       gap_discoverable_control (1);
       gap_connectable_control (1);
@@ -439,7 +324,6 @@ packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *packet,
 
     case L2CAP_EVENT_CAN_SEND_NOW:
       //printf("Send now\n");
-      count++;
       (void) l2cap_try_send_once ();	// send exactly one SDU
       //l2cap_request_can_send_now_event(l2cap_cid); // ALWAYS re-arm
       break;
@@ -476,20 +360,6 @@ main (void)
 
   // Light telemetry (no prints in ISR)
   absolute_time_t last = get_absolute_time ();
-
-while (1) {
-    tight_loop_contents();
-    sleep_ms(10);
-    if (l2cap_cid && (has_pending || ring_avail() > 0))
-        l2cap_request_can_send_now_event(l2cap_cid);
-
-    //printf("// restart DMA when BT freed space\n");
-    if (!dma_running && ring_free() >= DMA_BLOCK_BYTES)
-        start_dma_transfer(dma_ch, next_dst);
-}
-
-
-#if 0
   while (true)
     {
       tight_loop_contents ();
@@ -514,5 +384,4 @@ while (1) {
 	}
 #endif
     }
-#endif
 }

@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.28)
 
 add_executable(picow_i2c_to_l2cap
+	#main.c
 	classic.c
+	#ertm.c
 	#pico_source_test.c
 	#slave.c
 )
@@ -24,14 +26,14 @@ target_include_directories(picow_i2c_to_l2cap PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
-#target_compile_definitions(picow_i2c_to_l2cap PRIVATE BTSTACK_FILE=\"btstack_config.h\")
+target_compile_definitions(picow_i2c_to_l2cap PRIVATE BTSTACK_FILE=\"btstack_config.h\")
 # Make every BTstack-compiled file include our config header
-#add_compile_definitions(BTSTACK_FILE=\"btstack_config.h\")
+add_compile_definitions(BTSTACK_FILE=\"btstack_config.h\")
 
-#target_compile_definitions(picow_i2c_to_l2cap PRIVATE
-#   BTSTACK_FILE="btstack_config.h"
-#    CYW43_HOST_NAME="PicoW L2CAP Bridge"
-#)
+target_compile_definitions(picow_i2c_to_l2cap PRIVATE
+   BTSTACK_FILE="btstack_config.h"
+    CYW43_HOST_NAME="PicoW L2CAP Bridge"
+)
 
 
 # USB stdio? (optional)

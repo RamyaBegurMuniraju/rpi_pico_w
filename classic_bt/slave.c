@@ -26,6 +26,17 @@ static volatile uint32_t blocks_done = 0;
 static volatile uint64_t total_rx = 0;
 static volatile bool a_in_flight = false, b_in_flight = false;
 
+static absolute_time_t t0, t1;
+static volatile bool t0_set = false;
+
+
+static inline void hexdump(const uint8_t *p, uint32_t n){
+    for (uint32_t i = 0; i < n; i++){
+        printf("%02X%s", (unsigned)p[i], ((i+1)%16) ? " " : "\n");
+    }
+    if (n % 16) printf("\n");
+}
+
 static void start_dma_read(int ch, uint8_t *dst, size_t nbytes) {
     dma_channel_config c = dma_channel_get_default_config(ch);
     // Read 8-bit from I2C RX FIFO register -> memory
@@ -47,6 +58,8 @@ static void __not_in_flash_func(dma_irq_handler)(void) {
     uint32_t irq = dma_hw->ints0;
     if (irq & (1u << dma_a)) {
         dma_hw->ints0 = (1u << dma_a);
+    if (!t0_set) { t0 = get_absolute_time(); t0_set = true; }
+
         a_in_flight = false;
         blocks_done++;
         total_rx += BLOCK_BYTES;
@@ -69,13 +82,6 @@ static void __not_in_flash_func(dma_irq_handler)(void) {
     }
 }
 
-static inline void hexdump(const uint8_t *p, uint32_t n){
-    for (uint32_t i = 0; i < n; i++){
-        printf("%02X%s", (unsigned)p[i], ((i+1)%16) ? " " : "\n");
-    }
-    if (n % 16) printf("\n");
-}
-
 
 int main() {
     stdio_init_all();
@@ -89,8 +95,8 @@ int main() {
     gpio_pull_up(SDA_PIN);
     gpio_pull_up(SCL_PIN);
 
-    //i2c_init(I2C_PORT, 3.4 * 1000 * 1000);               // 3.4MHz is not supported by pico w slave
-    i2c_init(I2C_PORT,  1000 * 1000);               // 1 MHz 
+    i2c_init(I2C_PORT, 3.4 * 1000 * 1000);               // 3.4MHz is not supported by pico w slave
+    //i2c_init(I2C_PORT,  1000 * 1000);               // 1 MHz 
     //i2c_init(I2C_PORT, 400000);               // 400 KHz 
     //i2c_init(I2C_PORT, 100000);               // 100 KHz 
     i2c_set_slave_mode(I2C_PORT, true, I2C_ADDR);
@@ -110,11 +116,10 @@ int main() {
 
     // Kick both DMAs to form a continuous stream
     start_dma_read(dma_a, bufA, BLOCK_BYTES); a_in_flight = true;
-    hexdump(bufA, BLOCK_BYTES);
     start_dma_read(dma_b, bufB, BLOCK_BYTES); b_in_flight = true;
     hexdump(bufB, BLOCK_BYTES);
 
-    absolute_time_t t0 = get_absolute_time();
+    //absolute_time_t t0 = get_absolute_time();
     while (total_rx < TOTAL_BYTES) {
         // Optional: progress print every ~0.5 s
         static absolute_time_t last = {0};

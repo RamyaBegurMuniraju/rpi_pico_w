@@ -11,27 +11,20 @@
 #define HCI_ACL_CHUNK_SIZE_ALIGNMENT     4   // must be multiple of 4
 #define HCI_ACL_PAYLOAD_ALIGNMENT        4
 
-//#define HCI_HOST_ACL_PACKET_LEN       1021
-//#define HCI_HOST_ACL_PACKET_LEN       1695
 #define HCI_HOST_ACL_PACKET_NUM          4
 
 
-//#define HCI_ACL_PAYLOAD_SIZE            1021
 
 //Enahnced Retransmission
-#define ENABLE_L2CAP_ENHANCED_RETRANSMISSION_MODE
+#define ENABLE_L2CAP_ENHANCED_RETRANSMISSION_MODE 1
 
 // ---- L2CAP / storage ----
-//#define L2CAP_MTU                     65535 
 #define NVM_NUM_LINK_KEYS               4
 #define NVM_NUM_DEVICE_DB_ENTRIES       4
 
 #define MAX_NR_HCI_CONNECTIONS        1
 #define MAX_NR_CONTROLLER_ACL_BUFFERS 4  // small bump
-//#define HCI_ACL_PAYLOAD_SIZE 1024 
 #define HCI_ACL_PAYLOAD_SIZE 4096
-//ACL buffer size if HCI_ACL_PAYLOAD_SIZE + 8 
-//#define HCI_ACL_BUFFER_SIZE            (HCI_ACL_PAYLOAD_SIZE + 8) 
 
 #define HCI_ACL_RX_BUFFER_SIZE (HCI_ACL_PAYLOAD_SIZE + 8)
 #define HCI_ACL_TX_BUFFERS     6     // if RAM allows; default can be low
@@ -40,9 +33,6 @@
 
 // === Classic Bluetooth ===
 #define ENABLE_L2CAP_ERTM                1
-
-//#define NVM_NUM_LINK_KEYS          8
-//#define NVM_NUM_DEVICE_DB_ENTRIES  8
 
 #endif
 
