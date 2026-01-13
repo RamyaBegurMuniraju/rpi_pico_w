@@ -9,7 +9,7 @@ Modular C examples for Bluetooth Low Energy using Raspberry Pi Pico W and BTstac
 - `connection/`: BLE connection initiation & handling
 - `data_streaming/`: BLE connection initiation & data streaming for throughput measurement
 - `i2c_throughput/`: BLE connection initiation & handling & throughput measurement
-
+- `classic_bt`: data streaming over L2CAP Basic channel and ERTM on selecting ertm.c file in Makefile
 
 ## Prerequisites
 
